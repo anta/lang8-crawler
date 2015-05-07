@@ -2,19 +2,19 @@ import scrapy
 import re
 from scrapy import Selector
 from scrapy.http import FormRequest
+from scrapy.http import HtmlResponse
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import HtmlXPathSelector
-from lang8.items import Lang8Item
+from lang8.items import Lang8Item, CorrectionItem
 
 class Lang8Spider(CrawlSpider):
 	name 		= "lang8"
 	allowed_domains	= ["lang-8.com"]
-	start_urls	= ["http://lang-8.com/1231648/journals"]
+	scrapying_url = "http://lang-8.com/88284/journals"
 	rules = (
-			Rule(LinkExtractor(allow=(start_urls[0]+'/',)), callback='parse_item'),
+			Rule(LinkExtractor(allow=("\d+/journals/\d+",)), callback='parse_item'),
 	)
-
 	def start_requests(self):
 		yield scrapy.Request('https://lang-8.com/login', callback=self.login)
 
@@ -27,34 +27,52 @@ class Lang8Spider(CrawlSpider):
 										callback=self.logged_in)
 
 	def logged_in(self, response):
-		yield scrapy.Request(self.start_urls[0])
-		#for i in range(1, 1000000, 1):
-		#	url = "http://lang-8.com/" + i + "/journals"
-		#	yield scrapy.Request(url, callback=self.parse_item)
+		yield scrapy.Request("http://lang-8.com/88284/journals")
+		#for i in range(1, 100000, 1):
+		#	scrapying_url = "http://lang-8.com/" + str(i) + "/journals"
+		#	yield scrapy.Request(scrapying_url)
 
 	def parse_item(self, response):
 		self.log('parsing %s' % response.url)
 		item = Lang8Item()
 		hxs = Selector(response)
 		correction_list = hxs.xpath('//div[@class="correction_box"]')
-		to_be_remove = ["<p>", "</p>", "<span class=\"f_blue\">", "</span>"]  # words in blue are going to be kept
 		to_be_compile = [r"<span class=\"f_red\">(.*?)</span>",
 						 r"<span class=\"sline\">(.*?)</span>",
 						 r"<span class=\"f_gray\">(.*?)</span>"
 						]
-		compiled=[]
+		COMPILED_RE=[]
 		for one in to_be_compile:
-			compiled.append(re.compile(one))
+			COMPILED_RE.append(re.compile(one))
+		TAG_RE = re.compile(r"<.*?>")
+
+		item['correction']=[]
+		item['url']=response.url
 		if correction_list:
 			for co in correction_list:
 				correct_xpath = co.xpath('.//li[@class="corrected correct"]')
 				if not correct_xpath:
 					continue
-				incorrect = co.xpath('.//li[@class="incorrect"]/text()').extract()[0]
-				correct = correct_xpath.xpath('.//p[1]').extract()[0]
-				for one in compiled:
+#				correct=u""
+#				incorrect=u""
+				incorrect = co.xpath('.//li[@class="incorrect"]/text()').extract()[0].encode("utf-8")
+#				self.log("type of incorrect=%s" % type(incorrect))
+#				print "incorrect================%s" % (type(incorrect))
+				correct = correct_xpath.xpath('.//p[1]').extract()[0].encode("utf-8")
+#				self.log("type of correct=%s" % type(correct))
+				for one in COMPILED_RE:
 					correct = re.sub(one, "", correct)
-				for remove in to_be_remove:
-					correct = correct.replace(remove, "")
-				self.log('correct=%s\nincorrect=%s' % (correct, incorrect))
+				correct = re.sub(TAG_RE, "", correct)
+				#self.log("correct=%s incorrect=%s" % (correct, incorrect))
+				co_item = CorrectionItem()
+				co_item['correct'] = correct
+				co_item['incorrect'] = incorrect
+				item['correction'].append(dict(co_item))
+		main_list = hxs.xpath('//div[@id="body_show_ori"]').extract()
+		if main_list:
+			main = main_list[0]
+			main = re.sub(TAG_RE, "", main)
+			item['main'] = main
+			#self.log("main=%s" % main)
 		return item
+

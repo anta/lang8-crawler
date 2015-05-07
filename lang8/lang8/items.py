@@ -9,4 +9,9 @@ from scrapy.item import Item, Field
 
 class Lang8Item(Item):
 	main = Field()
-	#pair = Field()
+	correction = Field()
+	url = Field()
+
+class CorrectionItem(Item):
+	correct = Field()
+	incorrect = Field()
