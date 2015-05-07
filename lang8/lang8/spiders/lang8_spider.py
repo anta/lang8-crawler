@@ -53,11 +53,7 @@ class Lang8Spider(CrawlSpider):
 				correct_xpath = co.xpath('.//li[@class="corrected correct"]')
 				if not correct_xpath:
 					continue
-#				correct=u""
-#				incorrect=u""
 				incorrect = co.xpath('.//li[@class="incorrect"]/text()').extract()[0].encode("utf-8")
-#				self.log("type of incorrect=%s" % type(incorrect))
-#				print "incorrect================%s" % (type(incorrect))
 				correct = correct_xpath.xpath('.//p[1]').extract()[0].encode("utf-8")
 #				self.log("type of correct=%s" % type(correct))
 				for one in COMPILED_RE:
