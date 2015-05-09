@@ -27,10 +27,10 @@ class Lang8Spider(CrawlSpider):
 										callback=self.logged_in)
 
 	def logged_in(self, response):
-		yield scrapy.Request("http://lang-8.com/88284/journals")
-		#for i in range(1, 100000, 1):
-		#	scrapying_url = "http://lang-8.com/" + str(i) + "/journals"
-		#	yield scrapy.Request(scrapying_url)
+		#yield scrapy.Request("http://lang-8.com/88284/journals")
+		for i in range(1, 10000, 1):
+			scrapying_url = "http://lang-8.com/" + str(i) + "/journals"
+			yield scrapy.Request(scrapying_url)
 
 	def parse_item(self, response):
 		self.log('parsing %s' % response.url)
