@@ -18,7 +18,7 @@ Lang8 Crawler written in Python is based on scrapy, a fast high-level web crawli
 ##Installation
 You can disable Tor and Polipo support in settings.py to skip step 3 and 4
 
-* Install Python
+* Install Python 2.7
 * Install [Scrapy](http://doc.scrapy.org/en/latest/intro/install.html)
 * Install [Tor](https://www.torproject.org/)
 * Install [Polipo](http://www.pps.univ-paris-diderot.fr/~jch/software/polipo/) and edit polipo config file as follows
@@ -31,4 +31,4 @@ disableLocalInterface=""
 * change directory to lang8-crawler/lang8 and run Lang8 Crawler via `scrapy crawl lang8`
 
 ##Configuration
-1. Modify the lang8-crawler/lang8/lang8/settings.py to config scrapy. Check the self-explainable comments in settings.py 
+* Modify the lang8-crawler/lang8/lang8/settings.py to config scrapy. Check the self-explainable comments in settings.py 
