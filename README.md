@@ -21,13 +21,14 @@ You can disable Tor and Polipo support in settings.py to skip step 3 and 4
 1. Install Python
 2. Install Scrapy (http://scrapy.org)
 3. Install Tor (https://www.torproject.org/)
-4. Install Polipo (http://www.pps.univ-paris-diderot.fr/~jch/software/polipo/) and edit polipo config file as follows and run polipo via ```polipo -c CONFIG_FILE daemonise=true logFile=LOG_FILE```
+4. Install Polipo (http://www.pps.univ-paris-diderot.fr/~jch/software/polipo/) and edit polipo config file as follows
 ```
 socksParentProxy = localhost:9050
 diskCacheRoot=""
 disableLocalInterface=""
 ```
-5. change directory to lang8-crawler/lang8 and run Lang8 Crawler via ```scrapy crawl lang8```
+5. Run polipo via ```polipo -c CONFIG_FILE daemonise=true logFile=LOG_FILE```
+6. change directory to lang8-crawler/lang8 and run Lang8 Crawler via ```scrapy crawl lang8```
 
 ##Configuration
 1. Modify the lang8-crawler/lang8/lang8/settings.py to config scrapy. Check the self-explainable comments in settings.py 
