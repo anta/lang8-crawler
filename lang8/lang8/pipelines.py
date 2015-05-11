@@ -13,6 +13,7 @@ from scrapy.exceptions import DropItem
 
 class Lang8Pipeline(object):
 	def __init__(self):
+		self.output_directory = 'output2'
 		self.filename = ''
 		self.file_handle = {}
 
@@ -24,8 +25,10 @@ class Lang8Pipeline(object):
 		return pipeline
 
 	def spider_opened(self, spider, fileName='default.json'):
+		if not os.path.exists(self.output_directory):
+			os.makedirs(self.output_directory)
 		self.filename = fileName
-		file = codecs.open('output/' + self.filename, 'wb', encoding="utf-8")
+		file = codecs.open(self.output_directory + self.filename, 'wb', encoding="utf-8")
 		file.write(u"[")
 		self.file_handle[fileName]=file
 
@@ -40,8 +43,8 @@ class Lang8Pipeline(object):
 		self.curFileName = fname + ".json"
 
 		if self.filename=='default.json':
-			if os.path.isfile('output/'+self.filename):
-				os.rename('output/' + self.filename, 'output/' + self.curFileName)
+			if os.path.isfile(self.output_directory +self.filename):
+				os.rename(self.output_directory + self.filename, 'output2/' + self.curFileName)
 			file = self.file_handle['default.json']
 			del self.file_handle['default.json']
 			self.file_handle[self.curFileName] = file
